@@ -40,7 +40,7 @@ class Pin():
                 }
 
     @classmethod
-    def toName(cls, value:int):
+    def toName(cls, value):
         return cls.all()[value]
 
 class Signal():
@@ -73,7 +73,7 @@ class Signal():
         if self.verbose:
             logger.debug('[Signal#cleanup] GPIO cleanup complete')
 
-    def _changePinValue(self, pin:int, value:bool):
+    def _changePinValue(self, pin, value):
         GPIO.output(pin, value)
 
         oldValue = self.pinStates.get(pin, '<NO_VALUE>')
@@ -82,10 +82,10 @@ class Signal():
         if self.verbose:
             logger.debug('[Signal] Pin %s(%s) changed: %s -> %s', Pin.toName(pin), pin, oldValue, value)
 
-    def off(self, pin:int):
+    def off(self, pin):
         self._changePinValue(pin, False)
 
-    def on(self, pin:int):
+    def on(self, pin):
         self._changePinValue(pin, True)
 
     @classmethod

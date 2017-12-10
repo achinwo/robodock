@@ -18,7 +18,7 @@ class Motor():
     def signal(self):
         return Signal.default()
 
-    def axis(self, directionUp:bool, thenWait:int=0):
+    def axis(self, directionUp, thenWait=0):
 
         if directionUp:
             if self.type == Motor.MOVE:

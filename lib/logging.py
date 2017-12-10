@@ -1,16 +1,18 @@
-import logging
+import logging as logger
 import sys
 
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
+#logger.basicConfig(stream=sys.stdout, level=logger.DEBUG)
+#
+# debug = logger.debug
+# error = logger.error
+# info = logger.info
+# warning = logger.warning
+#from pprint import pprint as pp
 
-ch = logging.StreamHandler(sys.stdout)
-ch.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-ch.setFormatter(formatter)
-logger.addHandler(ch)
+def pp(format, *args):
+    print format % args
 
-debug = logger.debug
-error = logger.error
-info = logger.info
-warning = logger.warning
+debug = pp
+error = pp
+info = pp
+warning = pp
