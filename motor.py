@@ -34,8 +34,8 @@ class Motor():
                 self.signal.on(Pin.DEFAULT_FWD_AXIS_DWN)
                 self.signal.off(Pin.DEFAULT_FWD_AXIS_UP)
             elif self.type == Motor.TURN:
-                self.signal.on(Pin.DEFAULT_FWD_AXIS_DWN)
-                self.signal.off(Pin.DEFAULT_FWD_AXIS_UP)
+                self.signal.on(Pin.DEFAULT_SIDES_AXIS_DWN)
+                self.signal.off(Pin.DEFAULT_SIDES_AXIS_UP)
             else:
                 RuntimeError("invalid motor definition: %s" % self.type)
 
