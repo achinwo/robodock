@@ -1,7 +1,27 @@
-import logging as logger
+import lib.logging as logger
+from contextlib import contextmanager
 
 class GPIO(): #TODO { anthony } - add dependency to project
-    pass
+
+    BCM = 1
+
+    OUT = 'OUT'
+
+    @staticmethod
+    def setup(*args):
+        pass
+
+    @staticmethod
+    def cleanup(*args):
+        pass
+
+    @staticmethod
+    def output(*args):
+        pass
+
+    @staticmethod
+    def setmode(*args):
+        pass
 
 class Pin():
 
@@ -9,9 +29,8 @@ class Pin():
     DEFAULT_FWD_AXIS_DWN = 23 # back
 
     DEFAULT_SIDES_AXIS_UP = 16 # left
-    DEFAULT_SIDE_AXIS_DWN = 21 # right
+    DEFAULT_SIDES_AXIS_DWN = 21 # right
 
-    @property
     @staticmethod
     def all():
         return {16:'DEFAULT_SIDES_AXIS_UP',
@@ -22,7 +41,7 @@ class Pin():
 
     @classmethod
     def toName(cls, value:int):
-        return cls.all[value]
+        return cls.all()[value]
 
 class Signal():
 
@@ -31,23 +50,44 @@ class Signal():
     def __init__(self, verbose=True):
         self.verbose = verbose
         self.pinStates = {}
+        self.mode = GPIO.BCM
 
+    @contextmanager
+    def prepared(self):
+        self.setup()
+        yield
+        self.cleanup()
+
+    def setup(self):
+        GPIO.setmode(self.mode)
+
+        for pin in Pin.all():
+            GPIO.setup(pin, GPIO.OUT)
+
+        if self.verbose:
+            logger.debug('[Signal#cleanup] GPIO setup complete')
+
+    def cleanup(self):
+        GPIO.cleanup()
+
+        if self.verbose:
+            logger.debug('[Signal#cleanup] GPIO cleanup complete')
 
     def _changePinValue(self, pin:int, value:bool):
         GPIO.output(pin, value)
+
+        oldValue = self.pinStates.get(pin, '<NO_VALUE>')
         self.pinStates[pin] = value
 
         if self.verbose:
-            oldValue = self.pinStates.get(pin)
-            logger.debug('Pin changed: %s -> %s', pin, value)
+            logger.debug('[Signal] Pin %s(%s) changed: %s -> %s', Pin.toName(pin), pin, oldValue, value)
 
     def off(self, pin:int):
-        self._changePinValue(False)
+        self._changePinValue(pin, False)
 
     def on(self, pin:int):
-        self._changePinValue(True)
+        self._changePinValue(pin, True)
 
-    @property
     @classmethod
     def default(cls):
         instance = cls.INSTANCE
