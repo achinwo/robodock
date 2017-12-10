@@ -1,35 +1,48 @@
 from motor import Motor
 from lib.gpio import Signal, inPi
+import lib.logging as logger
 
+class Diagnostics():
 
-def diagnostics():
-    print('diagnostics starting...')
+    def __init__(self):
+        self.fwdBackMotor = Motor(Motor.MOVE)
+        self.turnMotor = Motor(Motor.TURN)
 
-    thenWait = 2 if inPi else 1
-    thenWaitTurn = 1 if inPi else 1
+    def moveFwdThenBack(self, stop=True):
+        thenWait = 2 if inPi else 0.5
+        self.fwdBackMotor.moveForward(thenWait=thenWait)
+        self.fwdBackMotor.moveBack(thenWait=thenWait)
 
-    with Signal.default().prepared():
-        fwdBackMotor = Motor(Motor.MOVE)
-        turnMotor = Motor(Motor.TURN)
+        if stop:
+            self.fwdBackMotor.stop()
 
-        fwdBackMotor.moveForward(thenWait=thenWait)
-        fwdBackMotor.moveBack(thenWait=thenWait)
-        fwdBackMotor.stop()
+    def turnRightThenLeft(self, stop=True):
+        thenWaitTurn = 1 if inPi else 0.5
+        self.turnMotor.turnRight(thenWait=thenWaitTurn)
+        self.turnMotor.turnLeft(thenWait=thenWaitTurn)
+        self.turnMotor.turnRight(thenWait=thenWaitTurn)
+        self.turnMotor.turnLeft(thenWait=thenWaitTurn)
+        self.turnMotor.turnRight(thenWait=thenWaitTurn)
 
-        turnMotor.turnRight(thenWait=thenWaitTurn)
-        turnMotor.stop()
+        if stop:
+            self.turnMotor.stop()
 
-        turnMotor.turnLeft(thenWait=thenWaitTurn)
-        turnMotor.stop()
+    def start(self):
+        logger.debug('[Diagnostics] diagnostics starting...')
 
-        turnMotor.turnRight(thenWait=thenWaitTurn)
-        turnMotor.stop()
+        with Signal.default().prepared():
+            logger.debug('[Diagnostics] #### Performing sequencial run ####')
+            self.moveFwdThenBack(stop=True)
+            self.turnRightThenLeft()
 
-        turnMotor.turnLeft(thenWait=thenWaitTurn)
-        turnMotor.stop()
+            logger.debug('[Diagnostics] #### Performing parallel run ####')
+            self.moveFwdThenBack(stop=False)
+            self.turnRightThenLeft()
 
-        turnMotor.turnRight(thenWait=thenWaitTurn)
-        turnMotor.stop()
+            self.turnMotor.stop()
+
+        logger.debug('[Diagnostics] diagnostics complete!')
+
 
 if __name__ == '__main__':
-    diagnostics()
+    Diagnostics().start()
