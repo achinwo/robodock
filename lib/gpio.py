@@ -40,7 +40,7 @@ class Pin():
     @staticmethod
     def all():
         return {16:'DEFAULT_SIDES_AXIS_UP',
-                21:'DEFAULT_SIDE_AXIS_DWN',
+                21:'DEFAULT_SIDES_AXIS_DWN',
                 18:'DEFAULT_FWD_AXIS_UP',
                 23:'DEFAULT_FWD_AXIS_DWN'
                 }
