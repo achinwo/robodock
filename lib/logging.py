@@ -15,4 +15,4 @@ def pp(format, *args):
 debug = pp
 error = pp
 info = pp
-warning = pp
+warning = warn = pp

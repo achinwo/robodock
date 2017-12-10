@@ -1,28 +1,33 @@
 import lib.logging as logger
 from contextlib import contextmanager
-import RPi.GPIO as GPIO
 
-# class GPIO(): #TODO { anthony } - add dependency to project
-#
-#     BCM = 1
-#
-#     OUT = 'OUT'
-#
-#     @staticmethod
-#     def setup(*args):
-#         pass
-#
-#     @staticmethod
-#     def cleanup(*args):
-#         pass
-#
-#     @staticmethod
-#     def output(*args):
-#         pass
-#
-#     @staticmethod
-#     def setmode(*args):
-#         pass
+class MockGPIO():
+    BCM = 1
+
+    OUT = 'OUT'
+
+    @staticmethod
+    def setup(*args):
+        pass
+
+    @staticmethod
+    def cleanup(*args):
+        pass
+
+    @staticmethod
+    def output(*args):
+        pass
+
+    @staticmethod
+    def setmode(*args):
+        pass
+
+try:
+    import RPi.GPIO as GPIO
+    inPi = True
+except ImportError as error:
+    inPi = False
+    GPIO = MockGPIO
 
 class Pin():
 
@@ -55,6 +60,10 @@ class Signal():
 
     @contextmanager
     def prepared(self):
+
+        if self.verbose:
+            logger.debug('[Signal] preparing GPIO dirver (inPi=%s)', inPi)
+
         self.setup()
         yield
         self.cleanup()
