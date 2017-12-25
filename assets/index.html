@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Robo Call</title>
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -12,14 +14,52 @@
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 </head>
-<body style="padding-top: 32px">
+<body style="padding-top: 32px;height: 100%;width: 100%">
 <div class="container">
-    <div class="jumbotron">
-      <h1 class="text-center">Robo Call</h1>
+    <div class="jumbotron" style="height: 320px">
+      <h1 class="text-center" style="margin-bottom: 40px">Robo Call</h1>
 
-        <div class="btn-group-vertical" role="group" aria-label="...">
-            <button type="button" id="move_fwd" class="btn btn-primary btn-lg">Forward</button>
-            <button type="button" id="move_back" class="btn btn-primary btn-lg">Back</button>
+        <div class="row">
+            <div class="col-sm-6 col-xs-12 col-md-3 col-md-offset-3">
+                <div class="btn-group-vertical btn-group-lg" role="group" aria-label="...">
+                    <button type="button" id="move_fwd" class="btn btn-success">Forward</button>
+                    <button type="button" id="move_back" class="btn btn-danger">Back</button>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 hidden-md col-md-4">
+                <div class="btn-group btn-group-lg" role="group" aria-label="...">
+                  <button type="button" id="turn_left_btn" class="btn btn-warning">Left</button>
+                  <!--<button type="button" id="turn_straight_btn" class="btn btn-primary">Straight</button>-->
+                  <button type="button" id="turn_right_btn" class="btn btn-warning">Right</button>
+                </div>
+            </div>
+
+            <div class="col-sm-6 hidden-xs hidden-lg">
+                <div class="radio">
+                  <label for="turn_straight">
+                    <input type="radio" name="optionsRadios" id="turn_straight" value="option1" checked>
+                    None
+                  </label>
+                </div>
+                <div class="radio">
+                  <label for="turn_right">
+                    <input type="radio" name="optionsRadios" id="turn_right" value="option1">
+                    Right
+                  </label>
+                </div>
+                <div class="radio">
+                  <label for="turn_left">
+                    <input type="radio" name="optionsRadios" id="turn_left" value="option2">
+                    Left
+                  </label>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <button type="button" id="full_stop" class="btn btn-danger">Full Stop!</button>
         </div>
     </div>
 </div>
@@ -27,31 +67,82 @@
 <script>
     $(document).on('ready', () => {
         console.log('yes!')
+        let fullStop$ = ('#full_stop')
+
         let fwdBtn$ = $('#move_fwd')
         let bckBtn$ = $('#move_back')
+
+        let straightBtn$ = $('#turn_straight')
+        let rightBtn$ = $('#turn_right')
+        let leftBtn$ = $('#turn_left')
+
+        let rightTurnBtn$ = $('#turn_right_btn')
+        let leftTurnBtn$ = $('#turn_left_btn')
 
         let pi = true
         let host = pi ? 'robodock' : 'localhost:8080'
 
-        fwdBtn$.on('mousedown', () => {
+        let CANCEL = null
+
+        function setTurn(path) {
+            $.get( `http://${host}/${path}`, function( data ) {
+               console.log('turn:', path)
+            });
+        }
+
+        rightBtn$.on('change', () => {
+            setTurn('right')
+        })
+
+        leftBtn$.on('change', () => {
+            setTurn('left')
+        })
+
+        leftTurnBtn$.on('mousedown touchstart', ()=> {
+            setTurn('left')
+        })
+
+        fullStop$.on('click', () => {
+            $.get( `http://${host}/stop`, function( data ) {
+               console.log('full stop!')
+            });
+        })
+
+        leftTurnBtn$.on('mouseup touchend touchcancel', ()=> {
+            if(CANCEL){
+                CANCEL()
+            }
+        })
+
+        rightTurnBtn$.on('mousedown touchstart', () => {
+            setTurn('right')
+        })
+
+        rightTurnBtn$.on('mouseup touchend touchcancel', () => {
+            if(CANCEL){
+                CANCEL()
+            }
+        })
+
+        fwdBtn$.on('mousedown touchstart', () => {
             $.get( `http://${host}/forward`, function( data ) {
                console.log('forward started')
             });
         })
 
-        fwdBtn$.on('mouseup', () => {
+        fwdBtn$.on('mouseup touchend touchcancel', () => {
             $.get( `http://${host}/forward_stop`, function( data ) {
                console.log('forward stopped')
             });
         })
 
-        bckBtn$.on('mousedown', () => {
+        bckBtn$.on('mousedown touchstart', () => {
             $.get( `http://${host}/back`, function( data ) {
                console.log('back started')
             });
         })
 
-        bckBtn$.on('mouseup', () => {
+        bckBtn$.on('mouseup touchend touchcancel', () => {
             $.get( `http://${host}/back_stop`, function( data ) {
                console.log('back stopped')
             });

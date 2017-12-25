@@ -46,6 +46,11 @@ class RoboCar(Car):
     def direction(self):
         return self._direction
 
+    def stop(self):
+        if self.moving or self.turning:
+            self.direction = None
+            logger.info('car stopped!')
+
     @direction.setter
     def direction(self, newVal):
 
@@ -61,18 +66,22 @@ class RoboCar(Car):
             self.T.stop()
         elif newVal == Car.MOVE_STOP:
             self.F.stop()
-
-        if self.direction in (Car.DIRECTION_LFT, Car.DIRECTION_RGT, Car.TURN_STOP):
-            self._direction = (newVal, self._direction[1])
         else:
+            self.T.stop()
+            self.F.stop()
+
+        if newVal in (Car.DIRECTION_LFT, Car.DIRECTION_RGT, Car.TURN_STOP):
+            self._direction = (newVal, self._direction[1])
+        elif newVal in (Car.DIRECTION_FWD, Car.DIRECTION_BCK, Car.MOVE_STOP):
             self._direction = (self._direction[0], newVal)
+        else:
+            self._direction = (None, None)
 
 CAR = RoboCar()
 
 class MainHandler(tornado.web.RequestHandler):
 
     def set_default_headers(self):
-        print "setting headers!!!"
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header("Access-Control-Allow-Headers", "x-requested-with")
         self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
@@ -80,20 +89,18 @@ class MainHandler(tornado.web.RequestHandler):
     def initialize(self):
         self.car = CAR
 
-    def toggleMove(self, fwd=True):
-        if self.car.direction[1] in (Car.DIRECTION_FWD, Car.DIRECTION_BCK):
-            self.car.direction = Car.MOVE_STOP
-        else:
-            self.car.direction = Car.DIRECTION_FWD if fwd else Car.DIRECTION_BCK
-
+    def move(self, fwd=True):
+        self.car.direction = Car.DIRECTION_FWD if fwd else Car.DIRECTION_BCK
         return self.car.moving
 
-    def toggleTurn(self, right=True):
-        if self.car.direction[0] in (Car.DIRECTION_RGT, Car.DIRECTION_LFT):
-            self.car.direction = Car.TURN_STOP
-        else:
-            self.car.direction = Car.DIRECTION_RGT if right else Car.DIRECTION_LFT
+    def moveStop(self):
+        self.car.direction = Car.MOVE_STOP
 
+    def turnStop(self):
+        self.car.direction = Car.TURN_STOP
+
+    def turn(self, right=True):
+        self.car.direction = Car.DIRECTION_RGT if right else Car.DIRECTION_LFT
         return self.car.moving
 
     def get(self):
@@ -107,16 +114,16 @@ class MainHandler(tornado.web.RequestHandler):
                 return self.write(f.read())
 
         fn = {
-            'forward':self.toggleMove,
-            'forward_stop':self.toggleMove,
-            'back': lambda : self.toggleMove(False),
-            'back_stop': lambda : self.toggleMove(False),
+            'forward':self.move,
+            'forward_stop':self.moveStop,
+            'back': lambda : self.move(False),
+            'back_stop': self.moveStop,
 
-            'right':self.toggleTurn,
-            'right_stop':self.toggleTurn,
-            'left': lambda : self.toggleTurn(False),
-            'left_stop': lambda : self.toggleTurn(False),
-              }.get(cmd.lower())
+            'right':self.turn,
+            'right_stop':self.turn,
+            'left': lambda : self.turn(False),
+            'left_stop': self.turnStop,
+              }.get(cmd.lower(), lambda : self.car.stop())
 
         if not fn:
             res = 'unknown command: %s' % cmd
@@ -142,7 +149,7 @@ if __name__ == "__main__":
         app = make_app()
         port = 80 if inPi else 8080
         app.listen(port)
-        logger.info('stared server on %s...', port)
+        logger.info('started server on %s...', port)
         tornado.ioloop.IOLoop.current().start()
 
     except Exception as ex:
