@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</head>
+<body style="padding-top: 32px">
+<div class="container">
+    <div class="jumbotron">
+      <h1 class="text-center">Robo Call</h1>
+
+        <div class="btn-group-vertical" role="group" aria-label="...">
+            <button type="button" id="move_fwd" class="btn btn-primary btn-lg">Forward</button>
+            <button type="button" id="move_back" class="btn btn-primary btn-lg">Back</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).on('ready', () => {
+        console.log('yes!')
+        let fwdBtn$ = $('#move_fwd')
+        let bckBtn$ = $('#move_back')
+
+        let pi = true
+        let host = pi ? 'robodock' : 'localhost:8080'
+
+        fwdBtn$.on('mousedown', () => {
+            $.get( `http://${host}/forward`, function( data ) {
+               console.log('forward started')
+            });
+        })
+
+        fwdBtn$.on('mouseup', () => {
+            $.get( `http://${host}/forward_stop`, function( data ) {
+               console.log('forward stopped')
+            });
+        })
+
+        bckBtn$.on('mousedown', () => {
+            $.get( `http://${host}/back`, function( data ) {
+               console.log('back started')
+            });
+        })
+
+        bckBtn$.on('mouseup', () => {
+            $.get( `http://${host}/back_stop`, function( data ) {
+               console.log('back stopped')
+            });
+        })
+    })
+
+</script>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+</body>
+</html>

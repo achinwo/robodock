@@ -71,6 +71,12 @@ CAR = RoboCar()
 
 class MainHandler(tornado.web.RequestHandler):
 
+    def set_default_headers(self):
+        print "setting headers!!!"
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "x-requested-with")
+        self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+
     def initialize(self):
         self.car = CAR
 
@@ -95,6 +101,11 @@ class MainHandler(tornado.web.RequestHandler):
         cmd = self.request.path[1:]
         logger.info('path: %s', self.request.path)
 
+        if self.request.path in ('/', 'index.html'):
+            self.add_header('Content-Type', 'text/html')
+            with open('./assets/index.html') as f:
+                return self.write(f.read())
+
         fn = {
             'forward':self.toggleMove,
             'forward_stop':self.toggleMove,
@@ -118,7 +129,7 @@ class MainHandler(tornado.web.RequestHandler):
             res = '%s: %s -> %s<br\>%s: %s -> %s' % ('Move', directionY, newDirectionY, 'Turn', directionX, newDirectionX)
 
         self.add_header('Content-Type', 'text/html')
-        self.write(str(res))
+        return self.write(str(res))
 
 def make_app():
     return tornado.web.Application([
