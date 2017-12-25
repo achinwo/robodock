@@ -16,7 +16,7 @@
 </head>
 <body style="padding-top: 32px;height: 100%;width: 100%">
 <div class="container">
-    <div class="jumbotron" style="height: 320px">
+    <div class="jumbotron" style="height: 360px">
       <h1 class="text-center" style="margin-bottom: 40px">Robo Call</h1>
 
         <div class="row">
@@ -59,7 +59,9 @@
 
 
         <div class="row">
-            <button type="button" id="full_stop" class="btn btn-danger">Full Stop!</button>
+            <div class="col-xs-12 col-md-4 col-md-offset-5">
+                <button type="button" id="full_stop" class="btn btn-lg btn-danger text-center">Full Stop!</button>
+            </div>
         </div>
     </div>
 </div>
@@ -67,7 +69,7 @@
 <script>
     $(document).on('ready', () => {
         console.log('yes!')
-        let fullStop$ = ('#full_stop')
+        let fullStop$ = $('#full_stop')
 
         let fwdBtn$ = $('#move_fwd')
         let bckBtn$ = $('#move_back')

@@ -47,9 +47,8 @@ class RoboCar(Car):
         return self._direction
 
     def stop(self):
-        if self.moving or self.turning:
-            self.direction = None
-            logger.info('car stopped!')
+        self.direction = None
+        logger.info('car stopping: moving=%s, turning=%s', self.moving, self.turning)
 
     @direction.setter
     def direction(self, newVal):

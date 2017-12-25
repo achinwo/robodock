@@ -73,6 +73,7 @@ class Signal():
 
         for pin in Pin.all():
             GPIO.setup(pin, GPIO.OUT)
+            GPIO.output(pin, False)
 
         if self.verbose:
             logger.debug('[Signal#setup] GPIO setup complete')
