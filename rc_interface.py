@@ -119,7 +119,7 @@ class MainHandler(tornado.web.RequestHandler):
             'back_stop': self.moveStop,
 
             'right':self.turn,
-            'right_stop':self.turn,
+            'right_stop':self.turnStop,
             'left': lambda : self.turn(False),
             'left_stop': self.turnStop,
               }.get(cmd.lower(), lambda : self.car.stop())

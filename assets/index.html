@@ -30,7 +30,7 @@
             <div class="col-xs-12 col-sm-6 hidden-md col-md-4">
                 <div class="btn-group btn-group-lg" role="group" aria-label="...">
                   <button type="button" id="turn_left_btn" class="btn btn-warning">Left</button>
-                  <!--<button type="button" id="turn_straight_btn" class="btn btn-primary">Straight</button>-->
+                  <button type="button" id="turn_straight_btn" class="btn btn-primary">Straight</button>
                   <button type="button" id="turn_right_btn" class="btn btn-warning">Right</button>
                 </div>
             </div>
@@ -80,6 +80,7 @@
 
         let rightTurnBtn$ = $('#turn_right_btn')
         let leftTurnBtn$ = $('#turn_left_btn')
+        let straightTurnBtn$ = $('#turn_straight_btn')
 
         let pi = true
         let host = pi ? 'robodock' : 'localhost:8080'
@@ -111,9 +112,7 @@
         })
 
         leftTurnBtn$.on('mouseup touchend touchcancel', ()=> {
-            if(CANCEL){
-                CANCEL()
-            }
+            setTurn('left_stop')
         })
 
         rightTurnBtn$.on('mousedown touchstart', () => {
@@ -121,9 +120,7 @@
         })
 
         rightTurnBtn$.on('mouseup touchend touchcancel', () => {
-            if(CANCEL){
-                CANCEL()
-            }
+            setTurn('right_stop')
         })
 
         fwdBtn$.on('mousedown touchstart', () => {
