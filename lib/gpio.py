@@ -75,7 +75,7 @@ class Signal():
             GPIO.setup(pin, GPIO.OUT)
 
         if self.verbose:
-            logger.debug('[Signal#cleanup] GPIO setup complete')
+            logger.debug('[Signal#setup] GPIO setup complete')
 
     def cleanup(self):
         GPIO.cleanup()
