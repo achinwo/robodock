@@ -7,17 +7,6 @@ from lib.gpio import Signal, inPi
 import tornado.ioloop
 import tornado.web
 
-# import signal, os
-
-# def handler(signum, frame):
-#     print 'Signal handler called with signal', signum
-#     os.exit(0)
-#
-# # Set the signal handler and a 5-second alarm
-# signal.signal(signal.SIGINT, handler)
-# signal.signal(signal.SIGTERM, handler)
-
-
 class Car(object):
     DIRECTION_FWD = 'forward'
     DIRECTION_BCK = 'back'
